@@ -1,0 +1,1 @@
+option('apk_signing_keystore', type: 'string', description: 'Absolute path to the APK signing keystore.')
