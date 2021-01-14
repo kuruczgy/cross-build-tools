@@ -1,0 +1,29 @@
+#!/bin/sh
+
+die() {
+	[ ! -z "$1" ] && printf 'Error: %s\n' "$1"
+	printf 'Usage: %s <cross target> <subproject>\n' "$0"
+	printf 'Possible cross targets: default, android-aarch64\n'
+	exit 1
+}
+
+[ "$#" -lt 2 ] && die
+CROSS_TARGET="$1"
+SUBPROJECT="$2"
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+[ ! -e "$REPO_ROOT"/subprojects/"$SUBPROJECT" ] \
+	&& die 'Could not find subproject'
+BUILD_BASE="${XDG_CACHE_HOME:-/tmp}"/build
+BUILD_DIR="$BUILD_BASE/cross_${CROSS_TARGET}_${SUBPROJECT}"
+
+CROSS_FILE_OPT="--"
+if [ "$CROSS_TARGET" != default ]; then
+	CROSS_FILE_OPT=--cross-file="$REPO_ROOT"/cross_files/"$CROSS_TARGET".ini
+fi
+
+CONFIG_OPT="-Dmain_subproject=$SUBPROJECT"
+
+mkdir -p "$BUILD_BASE"
+meson setup "$CONFIG_OPT" "$CROSS_FILE_OPT"  "$BUILD_DIR" "$REPO_ROOT"
+
+printf 'Your build dir: %s\n' "$BUILD_DIR"
