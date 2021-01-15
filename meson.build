@@ -7,7 +7,7 @@ cc = meson.get_compiler('c')
 
 subproject_default_options = [ 'default_library=static' ]
 
-if system == 'linux-android'
+if system == 'linux-android' or system == 'emscripten'
   # lib_log = cc.find_library('log')
   meson.override_dependency('glesv2', cc.find_library('GLESv2'))
   meson.override_dependency('egl', cc.find_library('EGL'))
@@ -94,7 +94,16 @@ if system == 'linux-android'
       build_by_default: true,
     )
   endif
-  subdir_done()
+else
+  exe = executable('executable', dependencies: main_dep)
 endif
 
-executable('executable', dependencies: main_dep)
+if system == 'emscripten'
+  conf_data = configuration_data()
+  conf_data.set('exe_name', exe.name())
+  configure_file(
+    input: 'assets/emscripten/shell_minimal.html.in',
+    output: 'index.html',
+    configuration: conf_data
+  )
+endif

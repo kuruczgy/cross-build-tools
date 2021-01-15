@@ -3,7 +3,7 @@
 die() {
 	[ ! -z "$1" ] && printf 'Error: %s\n' "$1"
 	printf 'Usage: %s <cross target> <subproject>\n' "$0"
-	printf 'Possible cross targets: default, android-aarch64\n'
+	printf 'Possible cross targets: default, emscripten, android-aarch64\n'
 	exit 1
 }
 

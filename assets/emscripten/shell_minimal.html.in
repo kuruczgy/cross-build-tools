@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<title>MGU Application</title>
+		<style>
+			* { margin: 0; padding: 0; }
+			body, html { height: 100%; }
+			#canvas { position: absolute; width: 100%; height: 100%; }
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+		<script type='text/javascript'>
+var Module = {
+	preRun: [],
+	postRun: [],
+	print: function(text) {
+		if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+		console.log(text);
+	},
+	printErr: function(text) {
+		if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+		console.log(text);
+	},
+	canvas: (function() {
+		var canvas = document.getElementById('canvas');
+
+		// As a default initial behavior, pop up an alert when webgl context is lost. To make your
+		// application robust, you may want to override this behavior before shipping!
+		// See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+		canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+		return canvas;
+	})(),
+	setStatus: function(text) {
+		  console.log('[status]  ' + text);
+	},
+	totalDependencies: 0,
+	monitorRunDependencies: function(left) {
+		this.totalDependencies = Math.max(this.totalDependencies, left);
+		Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+	}
+};
+Module.setStatus('Downloading...');
+window.onerror = function() {
+	Module.setStatus('Exception thrown, see JavaScript console');
+	Module.setStatus = function(text) {
+		if (text) Module.printErr('[post-exception status] ' + text);
+	};
+};
+		</script>
+		<script async type="text/javascript" src="@exe_name@.js"></script>
+	</body>
+</html>
