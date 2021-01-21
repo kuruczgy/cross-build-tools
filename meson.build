@@ -1,11 +1,9 @@
-project('cross-build-tools', 'c')
+project('cross-build-tools', 'c', default_options: [ 'default_library=static' ])
 fs = import('fs')
 
 system = host_machine.system()
 
 cc = meson.get_compiler('c')
-
-subproject_default_options = [ 'default_library=static' ]
 
 if system == 'linux-android' or system == 'emscripten'
   # lib_log = cc.find_library('log')
@@ -14,7 +12,7 @@ if system == 'linux-android' or system == 'emscripten'
 endif
 
 main_subproject = get_option('main_subproject')
-main_subproject_s = subproject(main_subproject, default_options: subproject_default_options)
+main_subproject_s = subproject(main_subproject)
 main_dep = main_subproject_s.get_variable(main_subproject + '_dep')
 
 if system == 'linux-android'
@@ -27,6 +25,7 @@ if system == 'linux-android'
   prog_javac = find_program('javac')
 
   lib_android = cc.find_library('android')
+  lib_log = cc.find_library('log')
 
   path_android_jar = android_sdk_path / 'platforms/android-30/android.jar'
 
@@ -35,7 +34,7 @@ if system == 'linux-android'
 
   lib_native_activity = shared_library(
     'native-activity',
-    dependencies: [ main_dep, lib_android ],
+    dependencies: [ main_dep, lib_android, lib_log ],
     link_with: lib_native_app_glue,
     # see: https://github.com/android/ndk/issues/381
     link_args: [ '-u', 'ANativeActivity_onCreate' ]
