@@ -13,7 +13,7 @@ SUBPROJECT="$2"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 [ ! -e "$REPO_ROOT"/subprojects/"$SUBPROJECT" ] \
 	&& die 'Could not find subproject'
-BUILD_BASE="${XDG_CACHE_HOME:-/tmp}"/build
+BUILD_BASE="${XDG_CACHE_HOME:-$HOME/.cache}"/build
 BUILD_DIR="$BUILD_BASE/cross_${CROSS_TARGET}_${SUBPROJECT}"
 
 CROSS_FILE_OPT="--"
